@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  PROJECT_ID: ${{ secrets.GCR_PROJECT }}
+  PROJECT_ID: helpdesk-demo-420516
   RUN_REGION: global
   SERVICE_NAME: helpdesk-fe
 
@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js (NPM)
         uses: actions/setup-node@master
         with:
-          node-version: '12.x'
+          node-version: '16.x'
 
       - name: Use cached node_modules
         uses: actions/cache@master
