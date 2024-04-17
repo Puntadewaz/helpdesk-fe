@@ -93,18 +93,10 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject",
-    "lint": "eslint src/**/*.js src/**/*.jsx",
-    "lint:fix": "eslint src/**/*.js --fix"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "eject": "react-scripts eject"
   },
   "devDependencies": {
     "@types/sortablejs": "1.10.6",
-    "eslint": "7.8.0",
-    "eslint-plugin-import": "2.22.0",
-    "eslint-plugin-react": "7.20.6",
     "sass-loader": "^8.0.2"
   },
   "browserslist": [
