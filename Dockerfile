@@ -12,7 +12,6 @@ RUN yarn install
 RUN rm -rf yarn.lock
 RUN rm -rf node_modules
 RUN yarn global add serve
-RUN npm ls webpack
 
 #RESIZE PACKAGE NODEJS
 RUN yarn build
