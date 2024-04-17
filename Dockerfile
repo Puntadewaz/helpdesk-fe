@@ -10,7 +10,6 @@ COPY package*.json ./
 #Build
 RUN yarn install
 RUN rm -rf yarn.lock
-RUN rm -rf node_modules
 RUN yarn global add serve
 
 #RESIZE PACKAGE NODEJS
