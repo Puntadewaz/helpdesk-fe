@@ -7,7 +7,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCR_PROJECT }}
-  RUN_REGION: us-central1
+  RUN_REGION: global
   SERVICE_NAME: helpdesk-fe
 
 jobs:
