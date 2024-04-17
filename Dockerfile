@@ -12,7 +12,7 @@ RUN rm -rf .env
 RUN rm -rf yarn.lock
 
 #Build
-RUN npm install --legacy-peer-deps
+RUN yarn install
 RUN yarn global add serve
 
 #RESIZE PACKAGE NODEJS
