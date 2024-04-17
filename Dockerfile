@@ -7,13 +7,12 @@ WORKDIR /var/www
 COPY . .
 COPY package*.json ./
 
-#DELETE YARN.LOCK
-RUN rm -rf .env
-RUN rm -rf yarn.lock
-
 #Build
 RUN yarn install
+RUN rm -rf yarn.lock
+RUN rm -rf node_modules
 RUN yarn global add serve
+RUN npm ls webpack
 
 #RESIZE PACKAGE NODEJS
 RUN yarn build
