@@ -16,7 +16,7 @@ RUN yarn install
 RUN yarn global add serve
 
 #RESIZE PACKAGE NODEJS
-RUN yarn build --max_old_space_size=3072
+RUN yarn build
 
 #PORT
 EXPOSE 3001
