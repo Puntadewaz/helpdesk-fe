@@ -13,9 +13,9 @@ const DefaultRoute = '/dashboard'
 // ** Merge Routes
 const Routes = [
   ...DashboardRoutes,
+  ...PagesRoutes,
   ...TicketRoutes,
-  ...UsersRoutes,
-  ...PagesRoutes
+  ...UsersRoutes
 ]
 
 export { DefaultRoute, TemplateTitle, Routes }

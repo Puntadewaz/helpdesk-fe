@@ -35,10 +35,6 @@ const PagesRoutes = [
     }
   },
   {
-    path: '/pages/account-settings',
-    component: lazy(() => import('../../views/pages/account-settings'))
-  },
-  {
     path: '/misc/coming-soon',
     component: lazy(() => import('../../views/pages/misc/ComingSoon')),
     layout: 'BlankLayout',
