@@ -76,7 +76,8 @@ const UserList = () => {
       2: { title: 'Professional', color: 'light-success' },
       3: { title: 'Rejected', color: 'light-danger' },
       4: { title: 'Resigned', color: 'light-warning' },
-      5: { title: 'Applied', color: 'light-info' }
+      5: { title: 'Applied', color: 'light-info' },
+      6: { title: 'Contract', color: 'secondary' }
     }
 
     if (value.length) {
