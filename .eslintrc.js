@@ -1,30 +1,31 @@
 module.exports = {
+  parser: "babel-eslint",
   env: {
     node: true,
     es6: true,
-    browser: true
+    browser: true,
   },
 
   parserOptions: {
     ecmaVersion: 6,
-    sourceType: 'module',
+    sourceType: "module",
     ecmaFeatures: {
       jsx: true,
       modules: true,
-      experimentalObjectRestSpread: true
-    }
+      experimentalObjectRestSpread: true,
+    },
   },
   rules: {
-    'no-console': 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    "no-console": "off",
+    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
 
     // Best Practices
-    eqeqeq: 'error',
-    'no-invalid-this': 'error',
-    'no-return-assign': 'error',
-    'no-unused-expressions': ['error', { allowTernary: true }],
-    'no-useless-concat': 'error',
-    'no-useless-return': 'error',
+    eqeqeq: "error",
+    "no-invalid-this": "error",
+    "no-return-assign": "error",
+    "no-unused-expressions": ["error", { allowTernary: true }],
+    "no-useless-concat": "error",
+    "no-useless-return": "error",
 
     // Variable
     // 'init-declarations': 'error',
@@ -63,14 +64,14 @@ module.exports = {
     // 'space-unary-ops': 'error',
 
     // ES6
-    'arrow-spacing': 'error',
-    'no-confusing-arrow': 'error',
-    'no-duplicate-imports': 'error',
-    'no-var': 'error',
-    'object-shorthand': 'error',
-    'prefer-const': 'error',
-    'prefer-template': 'error'
-  }
+    "arrow-spacing": "error",
+    "no-confusing-arrow": "error",
+    "no-duplicate-imports": "error",
+    "no-var": "error",
+    "object-shorthand": "error",
+    "prefer-const": "error",
+    "prefer-template": "error",
+  },
 
   // rules: {
   //   'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -79,4 +80,4 @@ module.exports = {
   //   'max-len': 'off',
   //   camelcase: ['error', { properties: 'never', ignoreDestructuring: true, ignoreImports: true }]
   // }
-}
+};
