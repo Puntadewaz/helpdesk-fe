@@ -18,9 +18,8 @@ import Avatar from "@components/avatar";
 import { Link } from "react-router-dom";
 import InputPasswordToggle from "@components/input-password-toggle";
 
-import { apiCreateUser } from '../store/user'
-import { useDispatch } from 'react-redux'
-
+import { apiCreateUser } from "../store/user";
+import { useDispatch } from "react-redux";
 
 import "@styles/react/libs/charts/apex-charts.scss";
 
@@ -57,7 +56,7 @@ const FailedCreate = () => (
 );
 
 const CreateUser = ({ history }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -100,10 +99,10 @@ const CreateUser = ({ history }) => {
         break;
     }
 
-    const res = await dispatch(apiCreateUser({newUser}))
+    const res = await dispatch(apiCreateUser({ newUser }));
     // console.log(create?.payload?.data)
-    if (res?.payload?.data?.error){
-      notifyFailedCreate()
+    if (res?.payload?.data?.error) {
+      notifyFailedCreate();
     } else {
       notifySuccessCreate();
       history.push("/user-management");
