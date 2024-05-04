@@ -1,5 +1,5 @@
 import { useState, Fragment } from "react";
-import { Check, ChevronLeft } from "react-feather";
+import { Check, ChevronLeft, X } from "react-feather";
 import {
   Row,
   Col,
@@ -17,6 +17,10 @@ import { toast } from "react-toastify";
 import Avatar from "@components/avatar";
 import { Link } from "react-router-dom";
 import InputPasswordToggle from "@components/input-password-toggle";
+
+import { apiCreateUser } from '../store/user'
+import { useDispatch } from 'react-redux'
+
 
 import "@styles/react/libs/charts/apex-charts.scss";
 
@@ -36,7 +40,25 @@ const SuccessCreate = () => (
   </Fragment>
 );
 
+const FailedCreate = () => (
+  <Fragment>
+    <div className="toastify-header">
+      <div className="title-wrapper">
+        <Avatar size="sm" color="danger" icon={<X size={12} />} />
+        <h6 className="toast-title">Failed!</h6>
+      </div>
+    </div>
+    <div className="toastify-body">
+      <span role="img" aria-label="toast-text">
+        Create User Failed
+      </span>
+    </div>
+  </Fragment>
+);
+
 const CreateUser = ({ history }) => {
+  const dispatch = useDispatch()
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,7 +75,10 @@ const CreateUser = ({ history }) => {
   const notifySuccessCreate = () =>
     toast.success(<SuccessCreate />, { hideProgressBar: true });
 
-  const createUser = () => {
+  const notifyFailedCreate = () =>
+    toast.error(<FailedCreate />, { hideProgressBar: true });
+
+  const createUser = async () => {
     const newUser = {
       username,
       password,
@@ -75,26 +100,14 @@ const CreateUser = ({ history }) => {
         break;
     }
 
-    async function addNewUser(newUser) {
-      try {
-        const res = await fetch(
-          `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/users`,
-          {
-            method: "POST",
-            body: JSON.stringify(newUser),
-            headers: {
-              "Content-type": "application/json",
-            },
-          }
-        );
-      } catch (error) {
-        console.log(error);
-      }
+    const res = await dispatch(apiCreateUser({newUser}))
+    // console.log(create?.payload?.data)
+    if (res?.payload?.data?.error){
+      notifyFailedCreate()
+    } else {
+      notifySuccessCreate();
+      history.push("/user-management");
     }
-
-    addNewUser(newUser);
-    notifySuccessCreate();
-    history.push("/user-management");
   };
 
   return (
@@ -103,7 +116,7 @@ const CreateUser = ({ history }) => {
         <CardBody>
           <Row>
             <div style={{ marginLeft: "1.5rem" }}>
-              <Link to={{ pathname: "/ticket" }}>
+              <Link to={{ pathname: "/user-management" }}>
                 <Row>
                   <ChevronLeft />
                   <p>Back</p>

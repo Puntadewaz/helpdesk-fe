@@ -12,9 +12,11 @@ import {
   Button,
 } from "reactstrap";
 import DataTable from "react-data-table-component";
-import axios from "axios";
 import { ChevronDown, Plus, Eye } from "react-feather";
 import { Link } from "react-router-dom";
+
+import { getUsers } from '../store/user'
+import { useDispatch, useSelector } from 'react-redux'
 
 import "@styles/react/libs/charts/apex-charts.scss";
 
@@ -78,25 +80,15 @@ const basicColumns = [
 ];
 
 const UserList = () => {
+  const dispatch = useDispatch()
+  const storeUser = useSelector(state => state.users)
+
   const [searchValue, setSearchValue] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  const [data, setData] = useState([]);
 
-  useEffect(function () {
-    async function getData() {
-      try {
-        const res = await fetch(
-          "https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/users"
-        );
-        if (!res.ok) throw new Error("Something went wrong with fetching data");
-        const data = await res.json();
-        setData(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getData();
-  }, []);
+  useEffect(() => {
+    dispatch(getUsers({}))
+  }, [dispatch, storeUser?.data?.length])
 
   const handleFilter = (e) => {
     const value = e.target.value;
@@ -112,7 +104,7 @@ const UserList = () => {
     };
 
     if (value.length) {
-      updatedData = data.filter((item) => {
+      updatedData = storeUser?.data.filter((item) => {
         const startsWith =
           item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
           item.post.toLowerCase().startsWith(value.toLowerCase()) ||
@@ -184,7 +176,7 @@ const UserList = () => {
                   <DataTable
                     noHeader
                     pagination
-                    data={searchValue.length ? filteredData : data}
+                    data={searchValue.length ? filteredData : storeUser?.data}
                     columns={basicColumns}
                     className="react-dataTable"
                     sortIcon={<ChevronDown size={10} />}
