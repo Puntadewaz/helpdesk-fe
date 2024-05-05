@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { Check, ChevronLeft, X } from "react-feather";
 import {
   Row,
@@ -18,8 +18,9 @@ import Avatar from "@components/avatar";
 import { Link } from "react-router-dom";
 import InputPasswordToggle from "@components/input-password-toggle";
 
-import { apiCreateUser } from '../store/user'
-import { useDispatch } from 'react-redux'
+import { apiCreateUser } from '@src/redux/reducers/user'
+import { getRoles } from '@src/redux/reducers/master'
+import { useDispatch, useSelector } from 'react-redux'
 
 
 import "@styles/react/libs/charts/apex-charts.scss";
@@ -58,20 +59,14 @@ const FailedCreate = () => (
 
 const CreateUser = ({ history }) => {
   const dispatch = useDispatch()
+  const storeMaster = useSelector(state => state.master)
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState({ value: "Agent", label: "Agent" });
-
-  const roleOptions = [
-    { value: "Admin", label: "Admin" },
-    { value: "Supervisor", label: "Supervisor" },
-    { value: "Technical", label: "Technical" },
-    { value: "Agent", label: "Agent" },
-  ];
-
+  const [role, setRole] = useState({value: 1, label: 'Agent'});
+  
   const notifySuccessCreate = () =>
     toast.success(<SuccessCreate />, { hideProgressBar: true });
 
@@ -83,25 +78,10 @@ const CreateUser = ({ history }) => {
       username,
       password,
       email,
+      role_id: role.value
     };
 
-    switch (role.value) {
-      case "Admin":
-        newUser.role_id = 0;
-        break;
-      case "Supervisor":
-        newUser.role_id = 1;
-        break;
-      case "Technical":
-        newUser.role_id = 2;
-        break;
-      case "Agent":
-        newUser.role_id = 3;
-        break;
-    }
-
     const res = await dispatch(apiCreateUser({newUser}))
-    // console.log(create?.payload?.data)
     if (res?.payload?.data?.error){
       notifyFailedCreate()
     } else {
@@ -109,6 +89,10 @@ const CreateUser = ({ history }) => {
       history.push("/user-management");
     }
   };
+
+  useEffect(() => {
+    dispatch(getRoles({}))
+  }, [dispatch, storeMaster?.role_options?.length])
 
   return (
     <div id="dashboard-analytics">
@@ -209,11 +193,14 @@ const CreateUser = ({ history }) => {
                     classNamePrefix="select"
                     // defaultValue={roleOptions[1]}
                     name="loading"
-                    options={roleOptions}
+                    options={storeMaster?.role_options}
                     isClearable={false}
                     required
                     value={role}
-                    onChange={(e) => setRole(e)}
+                    onChange={(e) => {
+                      console.log(e)
+                      setRole(e)
+                    }}
                   />
                 </Col>
               </Row>

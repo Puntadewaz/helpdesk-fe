@@ -15,7 +15,8 @@ import DataTable from "react-data-table-component";
 import { ChevronDown, Plus, Eye } from "react-feather";
 import { Link } from "react-router-dom";
 
-import { getUsers } from '../store/user'
+import { getUsers } from '@src/redux/reducers/user'
+import { getRoles } from '@src/redux/reducers/master'
 import { useDispatch, useSelector } from 'react-redux'
 
 import "@styles/react/libs/charts/apex-charts.scss";
@@ -68,11 +69,11 @@ const basicColumns = [
       switch (row.role_id) {
         case 0:
           return "Admin";
-        case 1:
+        case 3:
           return "Supervisor";
         case 2:
           return "Technical";
-        case 3:
+        case 1:
           return "Agent";
       }
     },
@@ -88,6 +89,7 @@ const UserList = () => {
 
   useEffect(() => {
     dispatch(getUsers({}))
+    dispatch(getRoles({}))
   }, [dispatch, storeUser?.data?.length])
 
   const handleFilter = (e) => {

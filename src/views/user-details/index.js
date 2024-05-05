@@ -1,5 +1,5 @@
 import { useState, Fragment, useEffect } from "react";
-import { Check, ChevronLeft } from "react-feather";
+import { Check, ChevronLeft, X } from "react-feather";
 import {
   Row,
   Col,
@@ -21,6 +21,10 @@ import InputPasswordToggle from "@components/input-password-toggle";
 import "@styles/react/libs/charts/apex-charts.scss";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
+import { getDataUser, apiUpdateUser } from '@src/redux/reducers/user'
+import { getRoles } from '@src/redux/reducers/master'
+import { useDispatch, useSelector } from 'react-redux'
+
 const SuccessUpdate = () => (
   <Fragment>
     <div className="toastify-header">
@@ -37,59 +41,73 @@ const SuccessUpdate = () => (
   </Fragment>
 );
 
+const FailedUpdate = () => (
+  <Fragment>
+    <div className="toastify-header">
+      <div className="title-wrapper">
+        <Avatar size="sm" color="danger" icon={<X size={12} />} />
+        <h6 className="toast-title">Failed!</h6>
+      </div>
+    </div>
+    <div className="toastify-body">
+      <span role="img" aria-label="toast-text">
+        Update User Failed
+      </span>
+    </div>
+  </Fragment>
+);
+
 const DetailUser = ({ history }) => {
+  const dispatch = useDispatch()
+  const storeMaster = useSelector(state => state.master)
+  const storeUser = useSelector(state => state.user)
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState({ value: "Agent", label: "Agent" });
+  const [role, setRole] = useState({ value: 1, label: "Agent" });
+  const [kuota, setKuota] = useState(0);
   const [readonlyInput, setReadonlyInput] = useState(true);
 
   const { id } = useParams();
 
-  useEffect(function () {
-    async function getUserDetails() {
-      try {
-        const res = await fetch(
-          `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/users/${id}`
-        );
-        if (!res.ok) throw new Error("Something went wrong when fetching data");
-        const userDetails = await res.json();
-        setUsername(userDetails.username);
-        setEmail(userDetails.email);
-        setPassword(userDetails.password);
-        setConfirmPassword(userDetails.password);
-        switch (userDetails) {
-          case 0:
-            return setRole({ value: "Admin", label: "Admin" });
-          case 1:
-            return setRole({ value: "Supervisor", label: "Supervisor" });
-          case 2:
-            return setRole({ value: "Technical", label: "Technical" });
-          case 3:
-            return setRole({ value: "Agent", label: "Agent" });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getUserDetails();
-  }, []);
-
-  const roleOptions = [
-    { value: "Admin", label: "Admin" },
-    { value: "Supervisor", label: "Supervisor" },
-    { value: "Technical", label: "Technical" },
-    { value: "Agent", label: "Agent" },
-  ];
+  const notifyFailedUpdate = () =>
+    toast.error(<FailedUpdate />, { hideProgressBar: true });
 
   const notifySuccessUpdate = () =>
     toast.success(<SuccessUpdate />, { hideProgressBar: true });
 
-  const updateUser = () => {
-    notifySuccessUpdate();
-    history.push("/user-management");
+  const updateUser = async () => {
+    const data = {
+      uuid: id,
+      password,
+      role_id: role.value,
+      kuota_assigned: parseInt(kuota)
+    } 
+    const update = await dispatch(apiUpdateUser({
+      data
+    }))
+    console.log(update)
+    if (update?.payload?.data?.message === "User update successfully") {
+      notifySuccessUpdate();
+      history.push("/user-management");
+    } else {
+      notifyFailedUpdate()
+    }
+    
   };
+
+  useEffect(async () => {
+    const datauser = await dispatch(getDataUser({uuid: id}))
+    const data = datauser?.payload?.data
+    // console.log(datauser)
+    setUsername(data?.username);
+    setEmail(data?.email);
+    setRole({value: data?.role?.id, label: data?.role?.name})
+    setKuota(data?.kuota_assigned)
+    dispatch(getRoles({}))
+  }, [dispatch, storeMaster?.role_options?.length, storeUser?.dataUser])
 
   return (
     <div id="dashboard-analytics">
@@ -119,7 +137,7 @@ const DetailUser = ({ history }) => {
                     bsSize="sm"
                     id="username-input"
                     required
-                    readOnly={readonlyInput}
+                    readOnly={true}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                   />
@@ -132,55 +150,41 @@ const DetailUser = ({ history }) => {
                     bsSize="sm"
                     id="email-input"
                     required
-                    readOnly={readonlyInput}
+                    readOnly={true}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </Col>
-                <Col xs="12">
-                  <Label>Password</Label>
-                  {/* <Input
-                    className='dataTable-filter mb-50'
-                    type='password'
-                    bsSize='sm'
-                    id='username-input'
-                    required
-                    readOnly={readonlyInput}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  /> */}
-                  <InputPasswordToggle
-                    value={password}
-                    id="password-input"
-                    name="password"
-                    readOnly={readonlyInput}
-                    className="input-group-merge"
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </Col>
-                <Col xs="12">
-                  <FormGroup>
-                    <Label>Confirm Password</Label>
-                    {/* <Input
-                      className='dataTable-filter mb-50'
-                      type='password'
-                      bsSize='sm'
-                      id='username-input'
-                      required
-                      readOnly={readonlyInput}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    /> */}
-                    <InputPasswordToggle
-                      value={confirmPassword}
-                      id="confirm-password-input"
-                      name="confirm-password"
-                      readOnly={readonlyInput}
-                      className="input-group-merge"
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </FormGroup>
-                </Col>
+                {!readonlyInput ? (
+                  <>
+                    <Col xs="12">
+                      <Label>Password</Label>
+                      <InputPasswordToggle
+                        value={password}
+                        id="password-input"
+                        name="password"
+                        readOnly={readonlyInput}
+                        className="input-group-merge"
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </Col>
+                    <Col xs="12">
+                      <FormGroup>
+                        <Label>Confirm Password</Label>
+                        <InputPasswordToggle
+                          value={confirmPassword}
+                          id="confirm-password-input"
+                          name="confirm-password"
+                          readOnly={readonlyInput}
+                          className="input-group-merge"
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
+                ): (
+                  <></>
+                )}
               </Row>
               <Row>
                 <Col xs="12">
@@ -190,12 +194,25 @@ const DetailUser = ({ history }) => {
                     classNamePrefix="select"
                     // defaultValue={roleOptions[1]}
                     name="loading"
-                    options={roleOptions}
+                    options={storeMaster.role_options}
                     isClearable={false}
                     required
                     isDisabled={readonlyInput}
                     value={role}
                     onChange={(e) => setRole(e)}
+                  />
+                </Col>
+                <Col xs="12">
+                  <Label>Kuota</Label>
+                  <Input
+                    className="dataTable-filter mb-50"
+                    type="tel"
+                    bsSize="sm"
+                    id="kuota-input"
+                    required
+                    readOnly={readonlyInput}
+                    value={kuota}
+                    onChange={(e) => setKuota(e.target.value)}
                   />
                 </Col>
               </Row>
