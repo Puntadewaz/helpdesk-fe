@@ -61,21 +61,6 @@ const Register = () => {
     const data = await res.json();
 
     history.push("/");
-
-    // useEffect(function () {
-    //   async function registerTicket() {
-    //     const res = await fetch(
-    //       `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/tickets`,
-    //       {
-    //         method: "POST",
-    //         body: JSON.stringify(newTicket),
-    //       }
-    //     );
-    //     console.log(res);
-    //   }
-    //   registerTicket();
-    //   history.push("/");
-    // }, []);
   };
 
   return (

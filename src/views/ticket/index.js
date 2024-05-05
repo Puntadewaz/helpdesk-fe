@@ -58,36 +58,18 @@ const basicColumns = [
   },
   {
     name: "Category",
-    selector: "category_id",
+    selector: "category",
     sortable: true,
     cell: (row) => {
-      switch (row.category_id) {
-        case 0:
-          return "Rating";
-        case 1:
-          return "Service";
-        case 2:
-          return "System";
-        case 3:
-          return "Software";
-        default:
-          return "Hardware";
-      }
+      return row.category.name;
     },
   },
   {
     name: "Priority",
-    selector: "priority_id",
+    selector: "priority_name",
     sortable: true,
     cell: (row) => {
-      switch (row.priority_id) {
-        case 0:
-          return "Low";
-        case 1:
-          return "Medium";
-        case 2:
-          return "High";
-      }
+      return row.priority.name;
     },
   },
   {
@@ -110,6 +92,7 @@ const TicketList = () => {
           "https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/tickets"
         );
         if (!res.ok) throw new Error("Something went wrong with fetching data");
+
         const data = await res.json();
         setData(data);
       } catch (error) {

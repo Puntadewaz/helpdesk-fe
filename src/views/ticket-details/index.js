@@ -71,6 +71,8 @@ const SuccessToastResolved = () => (
 
 const TicketDetails = ({ history }) => {
   const [ticket, setTicket] = useState({});
+  const [category, setCategory] = useState({});
+  const [priority, setPriority] = useState({});
   const { id } = useParams();
 
   useEffect(function () {
@@ -82,12 +84,23 @@ const TicketDetails = ({ history }) => {
         if (!res.ok) throw new Error("Something went wrong when fetching data");
         const data = await res.json();
         setTicket(data);
+        setCategory({
+          value: `${data.category.name}`,
+          label: `${data.category.name}`,
+        });
+        setPriority({
+          value: `${data.priority.name}`,
+          label: `${data.priority.name}`,
+        });
       } catch (error) {
         console.log(error);
       }
     }
     getTicket();
   }, []);
+
+  console.log(category.value);
+  console.log(priority);
 
   const categoryOptions = [
     { value: "Rating", label: "Rating" },
@@ -110,17 +123,71 @@ const TicketDetails = ({ history }) => {
   const notifySuccessResolved = () =>
     toast.success(<SuccessToastResolved />, { hideProgressBar: true });
 
-  const raiseTicket = () => {
+  const raiseTicket = async () => {
+    const updatedTicket = {
+      category_id: 2,
+      priority_id: 2,
+      user_id: ticket.user_id,
+      response: "Oke",
+    };
+
+    await fetch(
+      `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/raise-tickets/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(updatedTicket),
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+
     notifySuccessRaise();
     history.push("/ticket");
   };
 
-  const updateTicket = () => {
+  const updateTicket = async () => {
+    const updatedTicket = {
+      category_id: 2,
+      priority_id: 2,
+      user_id: ticket.user_id,
+      response: "Oke",
+    };
+
+    await fetch(
+      `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/update-tickets/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(updatedTicket),
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+
     notifySuccessUpdate();
     history.push("/ticket");
   };
 
-  const resolvedTicket = () => {
+  const resolvedTicket = async () => {
+    const updatedTicket = {
+      category_id: 2,
+      priority_id: 2,
+      user_id: ticket.user_id,
+      response: "Oke",
+    };
+
+    await fetch(
+      `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/resolved-tickets/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(updatedTicket),
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+
     notifySuccessResolved();
     history.push("/ticket");
   };
@@ -183,7 +250,7 @@ const TicketDetails = ({ history }) => {
                   <Select
                     className="react-select"
                     classNamePrefix="select"
-                    defaultValue={categoryOptions[3]}
+                    defaultValue={category.label}
                     name="loading"
                     options={categoryOptions}
                     // isLoading={true}
@@ -195,7 +262,7 @@ const TicketDetails = ({ history }) => {
                   <Select
                     className="react-select"
                     classNamePrefix="select"
-                    defaultValue={priorityOptions[0]}
+                    defaultValue={priority.value}
                     name="loading"
                     options={priorityOptions}
                     // isLoading={true}
