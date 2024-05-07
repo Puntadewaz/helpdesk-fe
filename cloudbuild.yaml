@@ -1,44 +1,46 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: helpdesk-fe
+  name: dev-helpdesk-fe
   namespace: '580452736839'
-  selfLink: /apis/serving.knative.dev/v1/namespaces/580452736839/services/helpdesk-fe
-  uid: 9519d17e-83c1-4fa9-9046-97fbf602a6fe
-  resourceVersion: AAYWTG+XIuA
-  generation: 3
-  creationTimestamp: '2024-04-17T15:15:57.203529Z'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/580452736839/services/dev-helpdesk-fe
+  uid: 40db4015-d486-41cb-9625-bbc436c6f2fb
+  resourceVersion: AAYXrzBViIw
+  generation: 6
+  creationTimestamp: '2024-04-25T04:05:29.691846Z'
   labels:
     managed-by: gcp-cloud-build-deploy-cloud-run
-    gcb-trigger-id: 9f8a666e-5d7b-4680-b4de-e332e560409c
+    gcb-trigger-id: 55b78da8-d803-48b7-8796-1ec21a1cacae
     gcb-trigger-region: global
-    commit-sha: 84c1cdcef1c838b4778065fe854d1a27ca45378c
-    gcb-build-id: a4bd0776-1483-4101-bc35-7c2d715fdc2b
-    cloud.googleapis.com/location: asia-northeast1
+    commit-sha: afec035e02913966938b1dbce4abd7588407d104
+    gcb-build-id: 2ccffe90-d136-44fc-8d3b-157063119d0b
+    run.googleapis.com/satisfiesPzs: 'true'
+    cloud.googleapis.com/location: asia-southeast1
   annotations:
     run.googleapis.com/client-name: gcloud
     serving.knative.dev/creator: puntadewazaid99@gmail.com
     serving.knative.dev/lastModifier: 580452736839-compute@developer.gserviceaccount.com
-    run.googleapis.com/client-version: 472.0.0
-    run.googleapis.com/launch-stage: BETA
-    run.googleapis.com/operation-id: f9c2e499-e579-4941-ba8b-f93155cfbc7a
+    run.googleapis.com/client-version: 474.0.0
+    run.googleapis.com/operation-id: 19b85276-fa75-4178-956c-d168dc894799
     run.googleapis.com/ingress: all
     run.googleapis.com/ingress-status: all
-    run.googleapis.com/minScale: '6'
+    run.googleapis.com/minScale: '0'
+    run.googleapis.com/max-surge: '0'
 spec:
   template:
     metadata:
       labels:
-        client.knative.dev/nonce: qxmoppsudh
+        client.knative.dev/nonce: umltolpahb
         managed-by: gcp-cloud-build-deploy-cloud-run
-        gcb-trigger-id: 9f8a666e-5d7b-4680-b4de-e332e560409c
+        gcb-trigger-id: 55b78da8-d803-48b7-8796-1ec21a1cacae
         gcb-trigger-region: global
-        commit-sha: 84c1cdcef1c838b4778065fe854d1a27ca45378c
-        gcb-build-id: a4bd0776-1483-4101-bc35-7c2d715fdc2b
+        commit-sha: afec035e02913966938b1dbce4abd7588407d104
+        gcb-build-id: 2ccffe90-d136-44fc-8d3b-157063119d0b
         run.googleapis.com/startupProbeType: Default
       annotations:
         run.googleapis.com/client-name: gcloud
-        run.googleapis.com/client-version: 472.0.0
+        run.googleapis.com/client-version: 474.0.0
+        run.googleapis.com/execution-environment: gen2
         autoscaling.knative.dev/maxScale: '100'
         run.googleapis.com/startup-cpu-boost: 'true'
     spec:
@@ -47,7 +49,7 @@ spec:
       serviceAccountName: 580452736839-compute@developer.gserviceaccount.com
       containers:
       - name: placeholder-1
-        image: asia-northeast1-docker.pkg.dev/helpdesk-demo-420516/cloud-run-source-deploy/helpdesk-fe/helpdesk-fe:84c1cdcef1c838b4778065fe854d1a27ca45378c
+        image: asia-southeast1-docker.pkg.dev/helpdesk-demo-420516/cloud-run-source-deploy/helpdesk-fe/dev-helpdesk-fe:afec035e02913966938b1dbce4abd7588407d104
         ports:
         - name: http1
           containerPort: 3000
@@ -65,23 +67,23 @@ spec:
   - percent: 100
     latestRevision: true
 status:
-  observedGeneration: 3
+  observedGeneration: 6
   conditions:
   - type: Ready
     status: 'True'
-    lastTransitionTime: '2024-04-17T15:23:25.765344Z'
+    lastTransitionTime: '2024-05-05T06:37:37.891468Z'
   - type: ConfigurationsReady
     status: 'True'
-    lastTransitionTime: '2024-04-17T15:15:57.287712Z'
+    lastTransitionTime: '2024-04-25T04:05:29.782499Z'
   - type: RoutesReady
     status: 'True'
-    lastTransitionTime: '2024-04-17T15:23:25.729135Z'
-  latestReadyRevisionName: helpdesk-fe-00002-bb9
-  latestCreatedRevisionName: helpdesk-fe-00002-bb9
+    lastTransitionTime: '2024-05-05T06:37:37.854263Z'
+  latestReadyRevisionName: dev-helpdesk-fe-00005-pp6
+  latestCreatedRevisionName: dev-helpdesk-fe-00005-pp6
   traffic:
-  - revisionName: helpdesk-fe-00002-bb9
+  - revisionName: dev-helpdesk-fe-00005-pp6
     percent: 100
     latestRevision: true
-  url: https://helpdesk-fe-i5qwuwknwq-an.a.run.app
+  url: https://dev-helpdesk-fe-i5qwuwknwq-as.a.run.app
   address:
-    url: https://helpdesk-fe-i5qwuwknwq-an.a.run.app
+    url: https://dev-helpdesk-fe-i5qwuwknwq-as.a.run.app
