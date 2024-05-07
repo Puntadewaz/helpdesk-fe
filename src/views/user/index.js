@@ -44,12 +44,6 @@ const basicColumns = [
     },
   },
   {
-    name: "ID",
-    selector: "uuid",
-    sortable: true,
-    // maxWidth: '100px'
-  },
-  {
     name: "Name",
     selector: "username",
     sortable: true,

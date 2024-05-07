@@ -3,11 +3,12 @@ import { isObjEmpty } from "@utils";
 import classnames from "classnames";
 import { useSkin } from "@hooks/useSkin";
 import useJwt from "@src/auth/jwt/useJwt";
-import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { handleLogin } from "@store/actions/auth";
 import { Link, useHistory } from "react-router-dom";
 import { AbilityContext } from "@src/utility/context/Can";
+import Avatar from "@components/avatar";
+import { Check, X } from "react-feather";
 import {
   Row,
   Col,
@@ -19,11 +20,54 @@ import {
   Form,
   Input,
 } from "reactstrap";
+import { toast } from "react-toastify";
 
 import "@styles/base/pages/page-auth.scss";
 import logo from "@src/assets/images/logo/logo-1.png";
+import Select from "react-select";
+import { getCategories } from '@src/redux/reducers/master'
+import { apiCreateTicket } from '@src/redux/reducers/ticket'
+import { useDispatch, useSelector } from 'react-redux'
+
+const SuccessUpdate = (number) => (
+  <Fragment>
+    <div className="toastify-header">
+      <div className="title-wrapper">
+        <Avatar size="sm" color="success" icon={<Check size={12} />} />
+        <h6 className="toast-title">Success!</h6>
+      </div>
+    </div>
+    <div className="toastify-body">
+      <span role="img" aria-label="toast-text">
+        Create Ticket Success!
+      </span>
+      <span role="img" aria-label="toast-text">
+        Your Ticket Number {number}
+      </span>
+    </div>
+  </Fragment>
+);
+
+const FailedUpdate = () => (
+  <Fragment>
+    <div className="toastify-header">
+      <div className="title-wrapper">
+        <Avatar size="sm" color="danger" icon={<X size={12} />} />
+        <h6 className="toast-title">Failed!</h6>
+      </div>
+    </div>
+    <div className="toastify-body">
+      <span role="img" aria-label="toast-text">
+        Update User Failed
+      </span>
+    </div>
+  </Fragment>
+);
 
 const Register = () => {
+  const dispatch = useDispatch()
+  const storeMaster = useSelector(state => state.master)
+
   const ability = useContext(AbilityContext);
 
   const [skin, setSkin] = useSkin();
@@ -38,30 +82,49 @@ const Register = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [description, setDescription] = useState("");
 
+  const notifyFailedCreate = () =>
+    toast.error(<FailedUpdate />, { hideProgressBar: true });
+
+  const notifySuccessCreate = (ticket_number) =>
+    toast.success(<SuccessUpdate number={ticket_number} />, { hideProgressBar: true });
+
   const illustration = skin === "dark" ? "graphic-1.png" : "graphic-1.png",
     source = require(`@src/assets/images/pages/${illustration}`).default;
 
   const submitTicket = async () => {
-    const post_data_form = new FormData();
+    const payload = {
+      name,
+      phoneNumber,
+      email,
+      category: category?.value,
+      description
+    }
 
-    post_data_form.append("customer_name", name);
-    post_data_form.append("customer_phone_number", phoneNumber);
-    post_data_form.append("customer_email", email);
-    post_data_form.append("category_id", 1);
-    post_data_form.append("description", description);
+    const create = await dispatch(apiCreateTicket({
+      payload
+    }))
+    console.log(create)
+    if (create?.payload !== undefined) {
+      notifySuccessCreate(create?.payload?.data?.ticket_number);
+    } else {
+      notifyFailedCreate();
+    }
+    // const res = await fetch(
+    //   `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/tickets`,
+    //   {
+    //     method: "POST",
+    //     body: post_data_form,
+    //   }
+    // );
 
-    const res = await fetch(
-      `https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/tickets`,
-      {
-        method: "POST",
-        body: post_data_form,
-      }
-    );
+    // const data = await res.json();
 
-    const data = await res.json();
-
-    history.push("/");
+    // history.push("/");
   };
+
+  useEffect(() => {
+    dispatch(getCategories({}))
+  }, [dispatch])
 
   return (
     <div className="auth-wrapper auth-v2">
@@ -114,7 +177,7 @@ const Register = () => {
                   Phone Number
                 </Label>
                 <Input
-                  type="tel"
+                  type="number"
                   value={phoneNumber}
                   id="register-phone-number"
                   name="register-phone-number"
@@ -145,7 +208,7 @@ const Register = () => {
                 <Label className="form-label" for="register-email">
                   Category
                 </Label>
-                <Input
+                {/* <Input
                   type="text"
                   value={category}
                   id="register-category"
@@ -155,6 +218,16 @@ const Register = () => {
                   className={classnames({
                     "is-invalid": errors["register-email"],
                   })}
+                /> */}
+                <Select
+                  className="react-select"
+                  classNamePrefix="select"
+                  // defaultValue={roleOptions[1]}
+                  name="loading"
+                  options={storeMaster.category_options}
+                  isClearable={false}
+                  value={category}
+                  onChange={(e) => setCategory(e)}
                 />
               </FormGroup>
               <FormGroup>

@@ -71,12 +71,18 @@ export const userManagement = createSlice({
     name: 'userManagement',
     initialState: {
       data: [],
-      dataUser: {}
+      dataUser: {},
+      user_options: []
     },
     reducers: {},
     extraReducers: builder => {
         builder.addCase(getUsers.fulfilled, (state, action) => {
             state.data = action.payload.data
+            const options = [{value: "", label: "All Agent"}]
+            action.payload.data.map((val) => {
+              options.push({value: val.id, label: val.username.toUpperCase()})
+            })
+            state.user_options = options
         })
         .addCase(getDataUser.fulfilled, (state, action) => {
             state.dataUser = action.payload.data

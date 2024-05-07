@@ -7,13 +7,15 @@ import navbar from './navbar'
 import layout from './layout'
 import users from './user'
 import master from './master'
+import ticket from './ticket'
 
 const rootReducer = combineReducers({
   auth,
   navbar,
   layout,
   users,
-  master
+  master,
+  ticket
 })
 
 export default rootReducer

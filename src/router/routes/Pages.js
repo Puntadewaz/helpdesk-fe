@@ -26,14 +26,14 @@ const PagesRoutes = [
       authRoute: true
     }
   },
-  {
-    path: '/register',
-    component: lazy(() => import('../../views/pages/authentication/Register')),
-    layout: 'BlankLayout',
-    meta: {
-      authRoute: true
-    }
-  },
+  // {
+  //   path: '/register',
+  //   component: lazy(() => import('../../views/pages/authentication/Register')),
+  //   layout: 'BlankLayout',
+  //   meta: {
+  //     authRoute: true
+  //   }
+  // },
   {
     path: '/misc/coming-soon',
     component: lazy(() => import('../../views/pages/misc/ComingSoon')),

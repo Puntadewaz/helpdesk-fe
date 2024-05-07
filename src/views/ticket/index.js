@@ -24,8 +24,14 @@ import {
 import axios from "axios";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
+import Flatpickr from 'react-flatpickr'
 
 import "@styles/react/libs/charts/apex-charts.scss";
+import '@styles/react/libs/flatpickr/flatpickr.scss'
+
+import { getTickets } from '@src/redux/reducers/ticket'
+import { getCategories, getPriority } from '@src/redux/reducers/master'
+import { useDispatch, useSelector } from 'react-redux'
 
 const basicColumns = [
   {
@@ -45,102 +51,113 @@ const basicColumns = [
   {
     name: "No. Tiket",
     selector: "ticket_number",
-    maxWidth: "110px",
+    minWidth: "200px",
   },
   {
     name: "Customer Name",
     selector: "customer_name",
     sortable: true,
+    minWidth: "200px",
   },
   {
     name: "Customer Email",
     selector: "customer_email",
+    minWidth: "200px",
   },
   {
     name: "Category",
-    selector: "category",
+    selector: "category_id",
     sortable: true,
     cell: (row) => {
-      return row.category.name;
+      return row.category.name !== "" ? row.category.name : "-";
     },
   },
   {
     name: "Priority",
-    selector: "priority_name",
+    selector: "priority_id",
     sortable: true,
     cell: (row) => {
-      return row.priority.name;
+      return row.priority.name !== "" ? row.priority.name : "-";
+    },
+  },
+  {
+    name: "Agent",
+    selector: "user_id",
+    sortable: true,
+    cell: (row) => {
+      return row.user?.username !== "" ? row.user?.username?.toUpperCase() : "-";
+    },
+  },
+  {
+    name: "Status",
+    selector: "status_id",
+    sortable: true,
+    cell: (row) => {
+      return row.status.name !== "" ? row.status.name : "-";
     },
   },
   {
     name: "Created At",
     selector: "created_at",
     sortable: true,
+    minWidth: "200px",
   },
 ];
 
 const TicketList = () => {
+  const dispatch = useDispatch()
+  const storeTicket = useSelector(state => state.ticket)
+
   const [searchValue, setSearchValue] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [startDate, setStartDate] = useState(new Date().setDate(1))
+  const [endDate, setEndDate] = useState(new Date(new Date().setDate(1)).setMonth(new Date().getMonth() + 1))
 
-  const [data, setData] = useState([]);
-
-  useEffect(function () {
-    async function getData() {
-      try {
-        const res = await fetch(
-          "https://helpdesk-be-i5qwuwknwq-as.a.run.app/v1/tickets"
-        );
-        if (!res.ok) throw new Error("Something went wrong with fetching data");
-
-        const data = await res.json();
-        setData(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getData();
-  }, []);
+  useEffect(() => {
+    dispatch(getTickets({payload:{
+      startDate,
+      endDate
+    }}))
+    dispatch(getCategories({}))
+    dispatch(getPriority({}))
+  }, [dispatch, storeTicket?.data?.length])
 
   const handleFilter = (e) => {
     const value = e.target.value;
     let updatedData = [];
     setSearchValue(value);
 
-    const status = {
-      1: { title: "Current", color: "light-primary" },
-      2: { title: "Professional", color: "light-success" },
-      3: { title: "Rejected", color: "light-danger" },
-      4: { title: "Resigned", color: "light-warning" },
-      5: { title: "Applied", color: "light-info" },
-    };
-
     if (value.length) {
-      updatedData = data.filter((item) => {
+      updatedData = storeTicket?.data?.filter((item) => {
         const startsWith =
-          item.full_name.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.post.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.email.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.age.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.salary.toLowerCase().startsWith(value.toLowerCase()) ||
-          item.start_date.toLowerCase().startsWith(value.toLowerCase()) ||
-          status[item.status].title
-            .toLowerCase()
-            .startsWith(value.toLowerCase());
+          item.ticket_number.toString().indexOf(value) > -1 ||
+          item.customer_name.toLowerCase().startsWith(value.toLowerCase()) ||
+          item.customer_email.toLowerCase().startsWith(value.toLowerCase()) ||
+          item.category?.name.toLowerCase().startsWith(value.toLowerCase()) ||
+          item.priority?.name.toLowerCase().startsWith(value.toLowerCase()) ||
+          item.user?.username.toLowerCase().startsWith(value.toLowerCase()) ||
+          item.status?.name.toLowerCase().startsWith(value.toLowerCase()) ||
+          item.created_at.toString().toLowerCase().startsWith(value.toLowerCase());
 
         const includes =
-          item.full_name.toLowerCase().includes(value.toLowerCase()) ||
-          item.post.toLowerCase().includes(value.toLowerCase()) ||
-          item.email.toLowerCase().includes(value.toLowerCase()) ||
-          item.age.toLowerCase().includes(value.toLowerCase()) ||
-          item.salary.toLowerCase().includes(value.toLowerCase()) ||
-          item.start_date.toLowerCase().includes(value.toLowerCase()) ||
-          status[item.status].title.toLowerCase().includes(value.toLowerCase());
+          item.ticket_number.toString().indexOf(value) > -1 ||
+          item.customer_name.toLowerCase().includes(value.toLowerCase()) ||
+          item.customer_email.toLowerCase().includes(value.toLowerCase()) ||
+          item.category?.name.toLowerCase().includes(value.toLowerCase()) ||
+          item.priority?.name.toLowerCase().includes(value.toLowerCase()) ||
+          item.user?.username.toLowerCase().includes(value.toLowerCase()) ||
+          item.status?.name.toLowerCase().includes(value.toLowerCase()) ||
+          item.created_at.toString().toLowerCase().includes(value.toLowerCase());
+
+        console.log(startsWith)
+        console.log(includes)
 
         if (startsWith) {
           return startsWith;
         } else if (!startsWith && includes) {
           return includes;
+        } else if (startsWith){
+          return startsWith;
         } else return null;
       });
       setFilteredData(updatedData);
@@ -157,6 +174,27 @@ const TicketList = () => {
               <Row>
                 <Col xs="12">
                   <Row className="justify-content-end mx-0">
+                    <Col
+                      className="d-flex align-items-center justify-content-start mt-1"
+                      md="6"
+                      sm="12"
+                    >
+                      <Row>
+                        <Col lg='5' sm='12'>
+                          <Label for='start-date'>Tanggal Mulai</Label>
+                          <Flatpickr className='form-control' style={{ backgroundColor: '#fff' }} value={startDate} onChange={date => setStartDate(date)} id='start-date' />
+                        </Col>
+                        <Col lg='2' sm='12'>
+                          <div style={{ alignItems: 'center', alignContent: 'center', textAlign: 'center' }}>
+                            <p style={{ fontSize: '30px', marginTop: '2rem' }}><b>-</b></p>
+                          </div>
+                        </Col>
+                        <Col lg='5' sm='12'>
+                          <Label for='end-date'>Tanggal Berakhir</Label>
+                          <Flatpickr className='form-control' style={{ backgroundColor: '#fff' }} value={endDate} onChange={date => setEndDate(date)} id='end-date' />
+                        </Col>
+                      </Row>
+                    </Col>
                     <Col
                       className="d-flex align-items-center justify-content-end mt-1"
                       md="6"
@@ -180,7 +218,7 @@ const TicketList = () => {
                   <DataTable
                     noHeader
                     pagination
-                    data={searchValue.length ? filteredData : data}
+                    data={searchValue.length ? filteredData : storeTicket?.data}
                     columns={basicColumns}
                     className="react-dataTable"
                     sortIcon={<ChevronDown size={10} />}

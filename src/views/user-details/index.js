@@ -88,7 +88,7 @@ const DetailUser = ({ history }) => {
     const update = await dispatch(apiUpdateUser({
       data
     }))
-    console.log(update)
+    // console.log(update)
     if (update?.payload?.data?.message === "User update successfully") {
       notifySuccessUpdate();
       history.push("/user-management");

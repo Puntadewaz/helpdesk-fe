@@ -170,12 +170,12 @@ const Login = (props) => {
                 Sign in
               </Button.Ripple>
             </Form>
-            <p className="text-center mt-2">
+            {/* <p className="text-center mt-2">
               <span className="mr-25">New on our platform?</span>
               <Link to="/register">
                 <span>Create an account</span>
               </Link>
-            </p>
+            </p> */}
           </Col>
         </Col>
       </Row>

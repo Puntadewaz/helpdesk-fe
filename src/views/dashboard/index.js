@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { Box, Clipboard, Clock, List, TrendingDown, TrendingUp } from 'react-feather'
 // import { kFormatter } from '@utils'
 import Avatar from '@components/avatar'
@@ -14,120 +14,78 @@ import { Bar, Line } from 'react-chartjs-2'
 import '@styles/react/libs/charts/apex-charts.scss'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 
+import { getUsers } from '@src/redux/reducers/user'
+import { useDispatch, useSelector } from 'react-redux'
+
 const AnalyticsDashboard = () => {
-  const [startDate, setStartDate] = useState(new Date())
-  const [endDate, setEndDate] = useState(new Date())
+  const dispatch = useDispatch()
+  const storeUser = useSelector(state => state.users)
+
+  const [startDate, setStartDate] = useState(new Date().setDate(1))
+  const [endDate, setEndDate] = useState(new Date(new Date().setDate(1)).setMonth(new Date().getMonth() + 1))
 
   const { colors } = useContext(ThemeColors)
 
-  const colourOptions = [
-    { value: 'ocean', label: 'Ocean' },
-    { value: 'blue', label: 'Blue' },
-    { value: 'purple', label: 'Purple' },
-    { value: 'red', label: 'Red' },
-    { value: 'orange', label: 'Orange' }
-  ]
-
-  const regionOptions = [
-    { value: 'banten', label: 'Banten' },
-    { value: 'jawa barat', label: 'Jawa Barat' },
-    { value: 'jawa tengah', label: 'Jawa Tengah' },
-    { value: 'jawa timur', label: 'Jawa Timur' },
-    { value: 'bali', label: 'Bali' }
-  ]
-
-  const agentOptions = [
-    { value: '1', label: 'Alex' },
-    { value: '2', label: 'Citra' },
-    { value: '3', label: 'Sukimin' },
-    { value: '4', label: 'Ratna' },
-    { value: '5', label: 'Lisa' }
-  ]
-
-  const avatarGroupArr = [
-      {
-        title: 'Billy Hopkins',
-        img: require('@src/assets/images/portrait/small/avatar-s-9.jpg').default,
-        placement: 'bottom',
-        imgHeight: 33,
-        imgWidth: 33
+    const optionsBar11 = {
+      elements: {
+        rectangle: {
+          borderWidth: 2,
+          borderSkipped: 'bottom'
+        }
       },
-      {
-        title: 'Amy Carson',
-        img: require('@src/assets/images/portrait/small/avatar-s-6.jpg').default,
-        placement: 'bottom',
-        imgHeight: 33,
-        imgWidth: 33
+      responsive: true,
+      maintainAspectRatio: false,
+      responsiveAnimationDuration: 500,
+      legend: {
+        display: false
       },
-      {
-        title: 'Brandon Miles',
-        img: require('@src/assets/images/portrait/small/avatar-s-8.jpg').default,
-        placement: 'bottom',
-        imgHeight: 33,
-        imgWidth: 33
+      tooltips: {
+        // Updated default tooltip UI
+        shadowOffsetX: 1,
+        shadowOffsetY: 1,
+        shadowBlur: 8,
+        // shadowColor: tooltipShadow,
+        backgroundColor: '#fff',
+        titleFontColor: '#000',
+        bodyFontColor: '#000'
       },
-      {
-        title: 'Daisy Weber',
-        img: require('@src/assets/images/portrait/small/avatar-s-7.jpg').default,
-        placement: 'bottom',
-        imgHeight: 33,
-        imgWidth: 33
-      },
-      {
-        title: 'Jenny Looper',
-        img: require('@src/assets/images/portrait/small/avatar-s-20.jpg').default,
-        placement: 'bottom',
-        imgHeight: 33,
-        imgWidth: 33
+      scales: {
+        xAxes: [
+          {
+            display: true,
+            gridLines: {
+              display: true
+              // color: gridLineColor,
+              // zeroLineColor: gridLineColor
+            },
+            scaleLabel: {
+              display: false
+            },
+            ticks: {
+              // fontColor: labelColor
+            },
+            stacked: true,
+          }
+        ],
+        yAxes: [
+          {
+            display: true,
+            gridLines: {
+              // color: gridLineColor,
+              // zeroLineColor: gridLineColor
+            },
+            ticks: {
+              stepSize: 100,
+              min: 0,
+              max: 400
+              // fontColor: labelColor
+            },
+            stacked: true,
+          }
+        ]
       }
-    ],
-    data = [
-      {
-        title: '12 Invoices have been paid',
-        content: 'Invoices have been paid to the company.',
-        meta: '',
-        metaClassName: 'mr-1',
-        customContent: (
-          <Media>
-            <img className='mr-1' src={jsonImg} alt='data.json' height='23' />
-            <Media className='mb-0' body>
-              data.json
-            </Media>
-          </Media>
-        )
-      },
-      {
-        title: 'Client Meeting',
-        content: 'Project meeting with john @10:15am.',
-        meta: '',
-        metaClassName: 'mr-1',
-        color: 'warning',
-        customContent: (
-          <Media className='align-items-center'>
-            <Avatar img={ceo} />
-            <Media className='ml-50' body>
-              <h6 className='mb-0'>John Doe (Client)</h6>
-              <span>CEO of Infibeam</span>
-            </Media>
-          </Media>
-        )
-      },
-      {
-        title: 'Create a new project for client',
-        content: 'Add files to new design folder',
-        color: 'info',
-        meta: '',
-        metaClassName: 'mr-1',
-        customContent: <AvatarGroup data={avatarGroupArr} />
-      },
-      {
-        title: 'Create a new project for client',
-        content: 'Add files to new design folder',
-        color: 'danger',
-        meta: '',
-        metaClassName: 'mr-1'
-      }
-    ]
+    }
+    
 
     const optionsBar1 = {
       elements: {
@@ -190,8 +148,25 @@ const AnalyticsDashboard = () => {
       labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       datasets: [
         {
+          label: "Low",
           data: [275, 90, 190, 205, 125, 85, 55, 87, 127, 150, 230, 280, 190, 100],
           backgroundColor: '#1B3D88',
+          borderColor: 'transparent',
+          barThickness: 15,
+          borderRadius: '20px'
+        },
+        {
+          label: "Medium",
+          data: [275, 90, 190, 205, 125, 85, 55, 87, 127, 150, 230, 280, 190, 100],
+          backgroundColor: '#69ff70',
+          borderColor: 'transparent',
+          barThickness: 15,
+          borderRadius: '20px'
+        },
+        {
+          label: "Critical",
+          data: [275, 90, 190, 205, 125, 85, 55, 87, 127, 150, 230, 280, 190, 100],
+          backgroundColor: '#fa6666',
           borderColor: 'transparent',
           barThickness: 15,
           borderRadius: '20px'
@@ -346,27 +321,20 @@ const AnalyticsDashboard = () => {
       ]
     }
 
-  //** To add spacing between legends and chart
-  // const plugins = [
-  //   {
-  //     beforeInit(chart) {
-  //       chart.legend.afterFit = function () {
-  //         this.height += 20
-  //       }
-  //     }
-  //   }
-  // ]
+  useEffect(() => {
+    dispatch(getUsers({}))
+  }, [dispatch, storeUser?.user_options?.length])
 
   return (
     <div id='dashboard-analytics'>
       <Row className='match-height'>
         <Col lg='6' sm='12'>
           <Row>
-            <Col lg='6' sm='12'>
+            <Col lg='5' sm='12'>
               <Label for='start-date'>Tanggal Mulai</Label>
               <Flatpickr className='form-control' style={{ backgroundColor: '#fff' }} value={startDate} onChange={date => setStartDate(date)} id='start-date' />
             </Col>
-            <Col lg='1' sm='12'>
+            <Col lg='2' sm='12'>
               <div style={{ alignItems: 'center', alignContent: 'center', textAlign: 'center' }}>
                 <p style={{ fontSize: '30px', marginTop: '2rem' }}><b>-</b></p>
               </div>
@@ -377,26 +345,17 @@ const AnalyticsDashboard = () => {
             </Col>
           </Row>
         </Col>
-        <Col lg='3' sm='12'>
-          <Label>Region</Label>
-          <Select
-            className='react-select'
-            classNamePrefix='select'
-            defaultValue={regionOptions[3]}
-            name='loading'
-            options={regionOptions}
-            // isLoading={true}
-            isClearable={false}
-          />
-        </Col>
-        <Col lg='3' sm='12'>
+        {/* <Col lg='3' sm='12'>
+          
+        </Col> */}
+        <Col lg='6' sm='12'>
           <Label>Agent</Label>
           <Select
             className='react-select'
             classNamePrefix='select'
-            defaultValue={agentOptions[2]}
+            defaultValue={storeUser?.user_options[0]}
             name='loading'
-            options={agentOptions}
+            options={storeUser?.user_options}
             // isLoading={true}
             isClearable={false}
           />
@@ -464,7 +423,7 @@ const AnalyticsDashboard = () => {
                 <CardBody>
                   <Row>
                     <Col lg='12' xs='12'>
-                      <p style={{ fontSize: '16px', fontWeight: 700, color: 'rgb(27, 61, 136)' }}>Severity Level</p>
+                      <p style={{ fontSize: '16px', fontWeight: 700, color: 'rgb(27, 61, 136)' }}>Priority Level</p>
                     </Col>
                   </Row>
                   <Row>
@@ -665,13 +624,13 @@ const AnalyticsDashboard = () => {
             <CardBody>
               <Row>
                 <Col xs='12'>
-                  <p style={{ fontSize: '16px', fontWeight: 700, color: 'rgb(27, 61, 136)' }}>Top 10 Subject</p>
+                  <p style={{ fontSize: '16px', fontWeight: 700, color: 'rgb(27, 61, 136)' }}>Top 10 Category</p>
                 </Col>
                 <Col xs='12' style={{paddingLeft: '0.2rem', paddingRight: '0.2rem'}}>
                   <Table responsive>
                     <thead>
                       <tr>
-                        <th style={{backgroundColor: '#fff', borderTop: 'none', fontSize: '12px', padding: '1rem' }}>Subject</th>
+                        <th style={{backgroundColor: '#fff', borderTop: 'none', fontSize: '12px', padding: '1rem' }}>Category</th>
                         <th style={{backgroundColor: '#fff', borderTop: 'none', fontSize: '12px', padding: '1rem' }}>Total</th>
                         <th style={{backgroundColor: '#fff', borderTop: 'none', fontSize: '12px', padding: '1rem' }}>Percent</th>
                       </tr>
@@ -688,46 +647,6 @@ const AnalyticsDashboard = () => {
                   </Table>
                 </Col>
               </Row>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      <Row className='match-height'>
-        <Col lg='6' xs='12'>
-          <Card className='card-user-timeline'>
-            <CardHeader>
-              <div className='d-flex align-items-center'>
-                <CardTitle tag='h4' style={{color: '#1B3D88', fontWeight: 600}}>Total Ticket Apps</CardTitle>
-              </div>
-            </CardHeader>
-            <CardBody>
-              <Bar data={dataBar1} options={optionsBar1} height={400} />
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg='6' xs='12'>
-          <Card className='card-user-timeline'>
-            <CardHeader>
-              <div className='d-flex align-items-center'>
-                <CardTitle tag='h4' style={{color: '#1B3D88', fontWeight: 600}}>Total Ticket Web</CardTitle>
-              </div>
-            </CardHeader>
-            <CardBody>
-              <Bar data={dataBar1} options={optionsBar1} height={400} />
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      <Row className='match-height'>
-        <Col xs='12'>
-          <Card className='card-user-timeline'>
-            <CardHeader>
-              <div className='d-flex align-items-center'>
-                <CardTitle tag='h4' style={{color: '#1B3D88', fontWeight: 600}}>Total Ticket Apps and Web</CardTitle>
-              </div>
-            </CardHeader>
-            <CardBody>
-              <Bar data={dataBar1} options={optionsBar1} height={400} />
             </CardBody>
           </Card>
         </Col>
@@ -751,13 +670,13 @@ const AnalyticsDashboard = () => {
           <Card className='card-user-timeline'>
             <CardHeader>
               <div className='d-flex align-items-center'>
-                <CardTitle tag='h4' style={{color: '#1B3D88', fontWeight: 600}}>Category Status</CardTitle>
+                <CardTitle tag='h4' style={{color: '#1B3D88', fontWeight: 600}}>Trend Priority Level</CardTitle>
               </div>
             </CardHeader>
             <CardBody>
               <Row>
                 <Col xs='12'>
-                  <Bar data={dataBar1} options={optionsBar1} height={400} />
+                  <Bar data={dataBar1} options={optionsBar11} height={400} />
                 </Col>
                 <Col xs='12'>
                   <Table responsive className='mt-2'>
